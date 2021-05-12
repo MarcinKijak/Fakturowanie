@@ -16,7 +16,7 @@ namespace Fakturowanie
     {
         public void Run()
         {
-            var pathToCustomerFile = @"C:\Users\Lenovo\Desktop\R\Customers.txt";
+            var pathToCustomerFile = @"C:\Rafal\Customers.txt";
 
             Console.WriteLine("Insert Customer name:");
             var name = Console.ReadLine();
@@ -28,25 +28,33 @@ namespace Fakturowanie
             var eMail = Console.ReadLine();
             Console.WriteLine("Insert Customer phone number:");
             var phoneNumber = Console.ReadLine();
-            
-            var contentOfCustomerFile = File.ReadAllLines(pathToCustomerFile);
-            
-            foreach (var customerLine in contentOfCustomerFile)
+            if (File.Exists(pathToCustomerFile))
             {
-                var customerData = customerLine.Split(";");
-                var taxNo = customerData[2].Split(":")[1];
-                var email = customerData[3].Split(":")[1];
-                if (taxNo == taxNumber || email == eMail)
+                var contentOfCustomerFile = File.ReadAllLines(pathToCustomerFile);
+
+                foreach (var customerLine in contentOfCustomerFile)
                 {
-                    throw new Exception("Client exists!");
+                    var customerData = customerLine.Split(";");
+                    var taxNo = customerData[2].Split(":")[1];
+                    var email = customerData[3].Split(":")[1];
+                    if (taxNo == taxNumber || email == eMail)
+                    {
+                        throw new Exception("Client exists!");
+                    }
                 }
+
+                Array.Resize<string>(ref contentOfCustomerFile, contentOfCustomerFile.Length + 1);
+                contentOfCustomerFile[contentOfCustomerFile.Length - 1] =
+                    $"name:{name}; address:{address}; taxNumber:{taxNumber}; eMail:{eMail}; phoneNumber:{phoneNumber}{Environment.NewLine}";
+                //write records to file
+                File.AppendAllLines(pathToCustomerFile, contentOfCustomerFile);
+            }
+            else
+            {
+                File.AppendAllText(pathToCustomerFile, $"name:{name}; address:{address}; taxNumber:{taxNumber}; eMail:{eMail}; phoneNumber:{phoneNumber}{Environment.NewLine}");
             }
 
-            Array.Resize<string>(ref contentOfCustomerFile, contentOfCustomerFile.Length + 1);
-            contentOfCustomerFile[contentOfCustomerFile.Length - 1] = $"name:{name}; address:{address}; taxNumber:{taxNumber}; eMail:{eMail}; phoneNumber:{phoneNumber}{Environment.NewLine}";
             
-            //write records to file
-            File.AppendAllText(pathToCustomerFile, contentOfCustomerFile.ToString());
         }
     }
 }
