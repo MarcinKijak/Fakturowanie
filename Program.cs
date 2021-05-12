@@ -19,9 +19,9 @@ namespace Fakturowanie
             var pathToCustomerFile = @"C:\Rafal\Customers.txt";
 
             GetCustomerData(out var name, out var address, out var taxNumber, out var eMail, out var phoneNumber);
-            
+
             if (File.Exists(pathToCustomerFile))
-            {   
+            {
                 var contentOfCustomerFile = File.ReadAllLines(pathToCustomerFile);
                 if (CustomerExists(contentOfCustomerFile, taxNumber, eMail))
                 {
