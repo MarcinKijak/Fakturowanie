@@ -13,5 +13,10 @@ namespace Fakturowanie
         public string TaxNumber { get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
+
+        public override string ToString()
+        {
+            return $"name:{Name}; address:{Address}; taxNumber:{TaxNumber}; eMail:{Email}; phoneNumber:{PhoneNumber}";
+        }
     }
 }
