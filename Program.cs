@@ -18,43 +18,67 @@ namespace Fakturowanie
         {
             var pathToCustomerFile = @"C:\Rafal\Customers.txt";
 
-            Console.WriteLine("Insert Customer name:");
-            var name = Console.ReadLine();
-            Console.WriteLine("Insert Customer address:");
-            var address = Console.ReadLine();
-            Console.WriteLine("Insert Customer tax number:");
-            var taxNumber = Console.ReadLine();
-            Console.WriteLine("Insert Customer e-mail:");
-            var eMail = Console.ReadLine();
-            Console.WriteLine("Insert Customer phone number:");
-            var phoneNumber = Console.ReadLine();
+            GetCustomerData(out var name, out var address, out var taxNumber, out var eMail, out var phoneNumber);
+
             if (File.Exists(pathToCustomerFile))
             {
-                var contentOfCustomerFile = File.ReadAllLines(pathToCustomerFile);
-
-                foreach (var customerLine in contentOfCustomerFile)
-                {
-                    var customerData = customerLine.Split(";");
-                    var taxNo = customerData[2].Split(":")[1];
-                    var email = customerData[3].Split(":")[1];
-                    if (taxNo == taxNumber || email == eMail)
-                    {
-                        throw new Exception("Client exists!");
-                    }
-                }
-
-                Array.Resize<string>(ref contentOfCustomerFile, contentOfCustomerFile.Length + 1);
-                contentOfCustomerFile[contentOfCustomerFile.Length - 1] =
-                    $"name:{name}; address:{address}; taxNumber:{taxNumber}; eMail:{eMail}; phoneNumber:{phoneNumber}{Environment.NewLine}";
-                //write records to file
-                File.AppendAllLines(pathToCustomerFile, contentOfCustomerFile);
+                var contentOfCustomerFile = ReadContentOfCustomerFile(pathToCustomerFile, taxNumber, eMail);
+                WriteCustomersToFile(contentOfCustomerFile, name, address, taxNumber, eMail, phoneNumber, pathToCustomerFile);
             }
             else
             {
-                File.AppendAllText(pathToCustomerFile, $"name:{name}; address:{address}; taxNumber:{taxNumber}; eMail:{eMail}; phoneNumber:{phoneNumber}{Environment.NewLine}");
+                WriteSingleCustomerToFile(pathToCustomerFile, name, address, taxNumber, eMail, phoneNumber);
+            }
+        }
+
+        private static void WriteCustomersToFile(string[] contentOfCustomerFile, string? name, string? address,
+            string? taxNumber, string? eMail, string? phoneNumber, string pathToCustomerFile)
+        {
+            Array.Resize<string>(ref contentOfCustomerFile, contentOfCustomerFile.Length + 1);
+            contentOfCustomerFile[contentOfCustomerFile.Length - 1] =
+                $"name:{name}; address:{address}; taxNumber:{taxNumber}; eMail:{eMail}; phoneNumber:{phoneNumber}{Environment.NewLine}";
+            //write records to file
+            File.AppendAllLines(pathToCustomerFile, contentOfCustomerFile);
+        }
+
+        private static string[] ReadContentOfCustomerFile(string pathToCustomerFile, string? taxNumber, string? eMail)
+        {
+            var contentOfCustomerFile = File.ReadAllLines(pathToCustomerFile);
+
+            foreach (var customerLine in contentOfCustomerFile)
+            {
+                var customerData = customerLine.Split(";");
+                var taxNo = customerData[2].Split(":")[1];
+                var email = customerData[3].Split(":")[1];
+                if (taxNo == taxNumber || email == eMail)
+                {
+                    throw new Exception("Client exists!");
+                }
             }
 
-            
+            return contentOfCustomerFile;
+        }
+
+        private static void WriteSingleCustomerToFile(string pathToCustomerFile, string? name, string? address, string? taxNumber,
+            string? eMail, string? phoneNumber)
+        {
+            File.AppendAllText(pathToCustomerFile,
+                $"name:{name}; address:{address}; taxNumber:{taxNumber}; eMail:{eMail}; phoneNumber:{phoneNumber}{Environment.NewLine}");
+        }
+
+        private static void GetCustomerData(out string? name, out string? address, out string? taxNumber, out string? eMail,
+            out string? phoneNumber)
+        {
+            Console.WriteLine("Insert Customer name:");
+            name = Console.ReadLine();
+            Console.WriteLine("Insert Customer address:");
+            address = Console.ReadLine();
+            Console.WriteLine("Insert Customer tax number:");
+            taxNumber = Console.ReadLine();
+            Console.WriteLine("Insert Customer e-mail:");
+            eMail = Console.ReadLine();
+            Console.WriteLine("Insert Customer phone number:");
+            phoneNumber = Console.ReadLine();
         }
     }
 }
