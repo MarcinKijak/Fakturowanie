@@ -19,10 +19,14 @@ namespace Fakturowanie
             var pathToCustomerFile = @"C:\Rafal\Customers.txt";
 
             GetCustomerData(out var name, out var address, out var taxNumber, out var eMail, out var phoneNumber);
-
+            
             if (File.Exists(pathToCustomerFile))
-            {
-                var contentOfCustomerFile = ReadContentOfCustomerFile(pathToCustomerFile, taxNumber, eMail);
+            {   
+                var contentOfCustomerFile = File.ReadAllLines(pathToCustomerFile);
+                if (CustomerExists(contentOfCustomerFile, taxNumber, eMail))
+                {
+                    throw new Exception("Client exists!");
+                }
                 WriteCustomersToFile(contentOfCustomerFile, name, address, taxNumber, eMail, phoneNumber, pathToCustomerFile);
             }
             else
@@ -41,10 +45,8 @@ namespace Fakturowanie
             File.AppendAllLines(pathToCustomerFile, contentOfCustomerFile);
         }
 
-        private static string[] ReadContentOfCustomerFile(string pathToCustomerFile, string? taxNumber, string? eMail)
+        private bool CustomerExists(string[] contentOfCustomerFile, string? taxNumber, string? eMail)
         {
-            var contentOfCustomerFile = File.ReadAllLines(pathToCustomerFile);
-
             foreach (var customerLine in contentOfCustomerFile)
             {
                 var customerData = customerLine.Split(";");
@@ -52,11 +54,11 @@ namespace Fakturowanie
                 var email = customerData[3].Split(":")[1];
                 if (taxNo == taxNumber || email == eMail)
                 {
-                    throw new Exception("Client exists!");
+                    return true;
                 }
             }
 
-            return contentOfCustomerFile;
+            return false;
         }
 
         private static void WriteSingleCustomerToFile(string pathToCustomerFile, string? name, string? address, string? taxNumber,
