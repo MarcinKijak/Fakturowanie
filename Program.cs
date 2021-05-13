@@ -16,7 +16,7 @@ namespace Fakturowanie
     {
         public void Run()
         {
-            var pathToCustomerFile = @"C:\Rafal\Customers.txt";
+            var pathToCustomerFile = @"C:\Users\Lenovo\Desktop\R\Customers.txt";
 
             var customer = GetCustomerData();
 
@@ -40,7 +40,7 @@ namespace Fakturowanie
             Array.Resize<string>(ref contentOfCustomerFile, contentOfCustomerFile.Length + 1);
             contentOfCustomerFile[contentOfCustomerFile.Length - 1] = customer.ToString();
             //write records to file
-            File.AppendAllLines(pathToCustomerFile, contentOfCustomerFile);
+            File.WriteAllLines(pathToCustomerFile, contentOfCustomerFile);
         }
 
         private bool CustomerExists(string[] contentOfCustomerFile, Customer customer)
